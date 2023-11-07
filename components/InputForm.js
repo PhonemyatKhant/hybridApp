@@ -39,7 +39,7 @@ export default function InputForm() {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedDifficulty, setSelectedDifficulty] = useState('');
 
-    const [isModalVisible, setModalVisible] = useState(false);
+    const [isModalVisible, setIsModalVisible] = useState(false);
     if (hikeData != undefined) {
         useEffect(() => {
             setName(hikeData.name);
@@ -72,7 +72,7 @@ export default function InputForm() {
     };
 
     const toggleModal = () => {
-        setModalVisible(!isModalVisible);
+        setIsModalVisible(!isModalVisible);
     };
 
     const handleCheckBoxChange = () => {
@@ -90,14 +90,15 @@ export default function InputForm() {
                     tx.executeSql(
                         'INSERT INTO hikes (name, location, length, date, difficulty, equipment, description, parkingAvailable) VALUES (?, ?, ?, ?, ?, ?, ?, ?);',
                         [name, location, length, selectedDate.toString(), selectedDifficulty, equipment, description, isChecked ? 1 : 0],
-                        (_, { rowsAffected }) => {
-                            if (rowsAffected > 0) {
-                                alert('Hike data saved successfully.');
-                                navigation.navigate('Home'); // Assuming 'home' is the name of your home screen
+                        (tx, results) => {
+                            navigation.navigate("Home")
+                            alert('Hike data saved successfully.')
+                            toggleModal();
+                        },
 
-                            } else {
-                                alert('Hike data not saved successfully.');
-                            }
+                        (tx, error) => {
+                            console.log('Updation error:' + error.message)
+                            toggleModal();
                         }
                     );
                 });
@@ -108,9 +109,15 @@ export default function InputForm() {
                         'UPDATE hikes SET name = ?, location = ?, length = ?, date = ?, difficulty = ?, equipment = ?, description = ?, parkingAvailable = ? ' +
                         'WHERE id = ?;',
                         [name, location, length, selectedDate.toString(), selectedDifficulty, equipment, description, isChecked ? 1 : 0, hikeData.id],
-                        (tx, results) => { navigation.navigate("Home") },
+                        (tx, results) => {
+                            navigation.navigate("Home")
+                            toggleModal();
+                        },
 
-                        (tx, error) => { console.log('Updation error:' + error.message) }
+                        (tx, error) => {
+                            console.log('Updation error:' + error.message)
+                            toggleModal();
+                        }
                     )
                 })
 

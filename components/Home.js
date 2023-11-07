@@ -43,6 +43,38 @@ export default function Home() {
             { cancelable: true }
         );
     }
+    const deleteAllHikes = () => {
+        Alert.alert(
+            'Delete Hike',
+            'Are you sure you want to delete all hikes?',
+            [
+                {
+                    text: 'No',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Yes',
+                    onPress: () => {
+                        db.transaction((tx) => {
+                            tx.executeSql(
+                                'DELETE FROM hikes;',
+                                [],
+                                (tx, results) => {
+                                    if (results.rowsAffected > 0) {
+                                        alert('All hikes deleted successfully.');
+                                        // Refresh the screen or do any additional tasks
+                                    } else {
+                                        alert('No hikes found to delete.');
+                                    }
+                                }
+                            )
+                        })
+                    }
+                },
+            ],
+            { cancelable: true }
+        );
+    }
     const deleteHike = (hikeId) => {
         db.transaction((tx) => {
             tx.executeSql('DELETE FROM hikes WHERE id = ?;',
@@ -62,30 +94,45 @@ export default function Home() {
                 data={hikeData}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
-                    <View style={styles.hikeItem}>
-                        <Text style={styles.hikeName}>{item.name}</Text>
-                        <Text style={styles.hikeLocation}>{item.location}</Text>
-                        <View style={styles.iconContainer}>
-                            <TouchableOpacity
-                                style={styles.iconButton}
-                                onPress={() => navigation.navigate('InputForm', { item: item })}
-                            >
-                                <AntDesign name="edit" size={24} color="green" />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles.iconButton}
-                                onPress={() => {
-                                    // Handle delete action here
-                                    console.log(`delete ${item.location}`);
-                                    deleteConfirm(item.id);
-                                }}
-                            >
-                                <AntDesign name="delete" size={24} color="red" />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('HikeDetails', { hike: item })}
+                    >
+                        <View style={styles.hikeItem}>
+                            <Text style={styles.hikeName}>{item.name}</Text>
+                            <Text style={styles.hikeLocation}>{item.location}</Text>
+                            <View style={styles.iconContainer}>
+                                <TouchableOpacity
+                                    style={styles.iconButton}
+                                    onPress={() => navigation.navigate('InputForm', { item: item })}
+                                >
+                                    <AntDesign name="edit" size={24} color="green" />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.iconButton}
+                                    onPress={() => {
+
+                                        console.log(`delete ${item.location}`);
+                                        deleteConfirm(item.id);
+                                    }}
+                                >
+                                    <AntDesign name="delete" size={24} color="red" />
+                                </TouchableOpacity>
+                            </View>
+                        </View></TouchableOpacity>
                 )}
             />
+            <TouchableOpacity
+                style={styles.deleteAllButton}
+                onPress={() => {
+
+                    console.log('Delete All');
+                    deleteAllHikes();
+
+                }}
+            >
+                <AntDesign name="delete" size={40} color="red" />
+            </TouchableOpacity>
+
             <TouchableOpacity
                 style={styles.addButton}
                 onPress={() => navigation.navigate('InputForm')}
@@ -127,5 +174,10 @@ const styles = StyleSheet.create({
     iconButton: {
         padding: 5,
         marginLeft: 5,
+    },
+    deleteAllButton: {
+        position: 'absolute',
+        bottom: 16,
+        left: 15,
     },
 });

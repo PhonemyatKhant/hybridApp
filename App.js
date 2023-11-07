@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Home from './components/Home';
 import InputForm from './components/InputForm';
+import HikeDetails from './components/HikeDetails';
 
 const Stack = createStackNavigator();
 export default function App() {
@@ -12,6 +13,7 @@ export default function App() {
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="InputForm" component={InputForm} />
+        <Stack.Screen name="HikeDetails" component={HikeDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );

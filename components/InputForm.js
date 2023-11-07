@@ -84,22 +84,39 @@ export default function InputForm() {
             // Alert the user to fill in all required inputs
             alert('Please fill in all required inputs.');
         } else {
-            // Continue with the database insertion
-            db.transaction((tx) => {
-                tx.executeSql(
-                    'INSERT INTO hikes (name, location, length, date, difficulty, equipment, description, parkingAvailable) VALUES (?, ?, ?, ?, ?, ?, ?, ?);',
-                    [name, location, length, selectedDate.toString(), selectedDifficulty, equipment, description, isChecked ? 1 : 0],
-                    (_, { rowsAffected }) => {
-                        if (rowsAffected > 0) {
-                            alert('Hike data saved successfully.');
-                            navigation.navigate('Home'); // Assuming 'home' is the name of your home screen
 
-                        } else {
-                            alert('Hike data not saved successfully.');
+            if (hikeData == undefined) {
+                db.transaction((tx) => {
+                    tx.executeSql(
+                        'INSERT INTO hikes (name, location, length, date, difficulty, equipment, description, parkingAvailable) VALUES (?, ?, ?, ?, ?, ?, ?, ?);',
+                        [name, location, length, selectedDate.toString(), selectedDifficulty, equipment, description, isChecked ? 1 : 0],
+                        (_, { rowsAffected }) => {
+                            if (rowsAffected > 0) {
+                                alert('Hike data saved successfully.');
+                                navigation.navigate('Home'); // Assuming 'home' is the name of your home screen
+
+                            } else {
+                                alert('Hike data not saved successfully.');
+                            }
                         }
-                    }
-                );
-            });
+                    );
+                });
+            } else {
+
+                db.transaction((tx) => {
+                    tx.executeSql(
+                        'UPDATE hikes SET name = ?, location = ?, length = ?, date = ?, difficulty = ?, equipment = ?, description = ?, parkingAvailable = ? ' +
+                        'WHERE id = ?;',
+                        [name, location, length, selectedDate.toString(), selectedDifficulty, equipment, description, isChecked ? 1 : 0, hikeData.id],
+                        (tx, results) => { navigation.navigate("Home") },
+
+                        (tx, error) => { console.log('Updation error:' + error.message) }
+                    )
+                })
+
+            }
+            // Continue with the database insertion
+
         }
     };
 
@@ -165,7 +182,7 @@ export default function InputForm() {
                 <CheckBox value={isChecked} onValueChange={handleCheckBoxChange} />
             </View>
             <View style={styles.buttonsContainer}>
-                <Button title="Submit" onPress={toggleModal} color="#007BFF" />
+                <Button title={hikeData != undefined ? "UPDATE" : "SUBMIT"} onPress={toggleModal} color="#007BFF" />
                 <Modal isVisible={isModalVisible}>
                     <View style={styles.modalContainer}>
                         <Text style={styles.modalHeader}>Review Your Input:</Text>

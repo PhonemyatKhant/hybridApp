@@ -1,31 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
 import * as SQLite from 'expo-sqlite';
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
+LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 export default function Home() {
     const db = SQLite.openDatabase('mhikeRn.db');
     const navigation = useNavigation();
+    const route = useRoute();
+
 
     const [hikeData, setHikeData] = useState([]);
-    const [deleteHike, setDeleteHike] = useState(null);
+    //const [deleteHike, setDeleteHike] = useState(null);
 
     useEffect(() => {
         db.transaction((tx) => {
             tx.executeSql('SELECT * FROM hikes;', [], (_, { rows }) => {
                 const hikeDataFromDB = rows._array;
                 setHikeData(hikeDataFromDB);
+
             });
         });
-    }, []);
-
-    const handleDelete = (hikeId) => {
-        setDeleteHike(hikeId);
-        showDeleteConfirmation();
-    };
-
-    const showDeleteConfirmation = () => {
+    }, [hikeData]);
+    //delete hike
+    const deleteConfirm = (hikeId) => {
         Alert.alert(
             'Delete Hike',
             'Are you sure you want to delete this hike?',
@@ -36,30 +37,24 @@ export default function Home() {
                 },
                 {
                     text: 'Yes',
-                    onPress: () => {
-                        // Handle the deletion
-                        deleteHikeFromDatabase();
-                    },
+                    onPress: () => deleteHike(hikeId)
                 },
             ],
             { cancelable: true }
         );
-    };
-
-    const deleteHikeFromDatabase = () => {
-        // Check if a hike is selected for deletion
-        if (deleteHike) {
-            db.transaction((tx) => {
-                tx.executeSql('DELETE FROM hikes WHERE id = ?;', [deleteHike], (_, { rowsAffected }) => {
-                    if (rowsAffected > 0) {
-                        // Hike deleted successfully
-                        setHikeData(hikeData.filter((hike) => hike.id !== deleteHike));
-                    }
+    }
+    const deleteHike = (hikeId) => {
+        db.transaction((tx) => {
+            tx.executeSql('DELETE FROM hikes WHERE id = ?;',
+                [hikeId],
+                (tx, results) => {
+                    Alert.alert('Deleted', 'successfully deleted')
+                },
+                (tx, error) => {
+                    Alert.alert('Not Deleted', 'unsuccessfull')
                 });
-            });
-        }
-        setDeleteHike(null); // Reset the deleteHike state
-    };
+        });
+    }
 
     return (
         <View style={styles.container}>
@@ -73,10 +68,7 @@ export default function Home() {
                         <View style={styles.iconContainer}>
                             <TouchableOpacity
                                 style={styles.iconButton}
-                                onPress={() => {
-                                    // Handle edit action here
-                                    console.log(`Edit ${item.name}`);
-                                }}
+                                onPress={() => navigation.navigate('InputForm', { item: item })}
                             >
                                 <AntDesign name="edit" size={24} color="green" />
                             </TouchableOpacity>
@@ -84,7 +76,8 @@ export default function Home() {
                                 style={styles.iconButton}
                                 onPress={() => {
                                     // Handle delete action here
-                                    handleDelete(item.id);
+                                    console.log(`delete ${item.location}`);
+                                    deleteConfirm(item.id);
                                 }}
                             >
                                 <AntDesign name="delete" size={24} color="red" />

@@ -5,10 +5,11 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Modal from 'react-native-modal';
 import * as SQLite from 'expo-sqlite';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 
 const db = SQLite.openDatabase('mhikeRn.db');
+
 
 db.transaction((tx) => {
     tx.executeSql(
@@ -20,6 +21,11 @@ db.transaction((tx) => {
 export default function InputForm() {
 
     const navigation = useNavigation();
+    const route = useRoute();
+    const hikeData = route.params?.item
+
+
+
 
     const [name, setName] = useState('');
     const [location, setLocation] = useState('');
@@ -34,6 +40,19 @@ export default function InputForm() {
     const [selectedDifficulty, setSelectedDifficulty] = useState('');
 
     const [isModalVisible, setModalVisible] = useState(false);
+    if (hikeData != undefined) {
+        useEffect(() => {
+            setName(hikeData.name);
+            setLocation(hikeData.location);
+            setLength(hikeData.length.toString());
+            setSelectedDate(new Date(hikeData.date));
+            setSelectedDifficulty(hikeData.difficulty);
+            setEquipment(hikeData.equipment);
+            setDescription(hikeData.description);
+            setIsChecked(hikeData.parkingAvailable === 1);
+
+        }, [])
+    }
 
     const data = [
         { key: '1', value: 'Easy' },
@@ -122,6 +141,7 @@ export default function InputForm() {
                 <Text style={styles.header}>Select Difficulty</Text>
                 <View style={styles.list}>
                     <SelectList
+                        placeholder={selectedDifficulty}
                         setSelected={(val) => setSelectedDifficulty(val)}
                         data={data}
                         save="value"

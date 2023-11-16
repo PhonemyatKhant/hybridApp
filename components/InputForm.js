@@ -7,9 +7,7 @@ import Modal from 'react-native-modal';
 import * as SQLite from 'expo-sqlite';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
-
 const db = SQLite.openDatabase('mhikeRn.db');
-
 
 db.transaction((tx) => {
     tx.executeSql(
@@ -17,15 +15,10 @@ db.transaction((tx) => {
     );
 });
 
-
 export default function InputForm() {
-
     const navigation = useNavigation();
     const route = useRoute();
-    const hikeData = route.params?.item
-
-
-
+    const hikeData = route.params?.item;
 
     const [name, setName] = useState('');
     const [location, setLocation] = useState('');
@@ -40,6 +33,7 @@ export default function InputForm() {
     const [selectedDifficulty, setSelectedDifficulty] = useState('');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
+
     if (hikeData != undefined) {
         useEffect(() => {
             setName(hikeData.name);
@@ -50,8 +44,7 @@ export default function InputForm() {
             setEquipment(hikeData.equipment);
             setDescription(hikeData.description);
             setIsChecked(hikeData.parkingAvailable === 1);
-
-        }, [])
+        }, []);
     }
 
     const data = [
@@ -81,53 +74,46 @@ export default function InputForm() {
 
     const handleConfirmation = () => {
         if (!name || !location || !length || !selectedDifficulty) {
-            // Alert the user to fill in all required inputs
+
             alert('Please fill in all required inputs.');
         } else {
-
             if (hikeData == undefined) {
                 db.transaction((tx) => {
                     tx.executeSql(
                         'INSERT INTO hikes (name, location, length, date, difficulty, equipment, description, parkingAvailable) VALUES (?, ?, ?, ?, ?, ?, ?, ?);',
                         [name, location, length, selectedDate.toString(), selectedDifficulty, equipment, description, isChecked ? 1 : 0],
                         (tx, results) => {
-                            navigation.navigate("Home")
-                            alert('Hike data saved successfully.')
+                            navigation.navigate('Home');
+                            alert('Hike data saved successfully.');
                             toggleModal();
                         },
-
                         (tx, error) => {
-                            console.log('Updation error:' + error.message)
+                            console.log('Updation error:' + error.message);
                             toggleModal();
                         }
                     );
                 });
             } else {
-
                 db.transaction((tx) => {
                     tx.executeSql(
                         'UPDATE hikes SET name = ?, location = ?, length = ?, date = ?, difficulty = ?, equipment = ?, description = ?, parkingAvailable = ? ' +
                         'WHERE id = ?;',
                         [name, location, length, selectedDate.toString(), selectedDifficulty, equipment, description, isChecked ? 1 : 0, hikeData.id],
                         (tx, results) => {
-                            navigation.navigate("Home")
+                            alert('Hike data updated successfully.');
+                            navigation.navigate('Home');
                             toggleModal();
                         },
-
                         (tx, error) => {
-                            console.log('Updation error:' + error.message)
+                            console.log('Updation error:' + error.message);
                             toggleModal();
                         }
-                    )
-                })
-
+                    );
+                });
             }
-            // Continue with the database insertion
 
         }
     };
-
-
 
     return (
         <View style={styles.container}>
@@ -145,13 +131,13 @@ export default function InputForm() {
             />
             <TextInput
                 style={styles.input}
-                placeholder="Enter hike length"
+                placeholder="Enter hike length (miles)"
                 value={length}
                 onChangeText={(text) => setLength(text)}
                 keyboardType="numeric"
             />
             <View style={styles.datePicker}>
-                <Button title={selectedDate.toDateString()} onPress={showDatePickerModal} />
+                <Button style={styles.button} title={selectedDate.toDateString()} onPress={showDatePickerModal} />
                 {showDatePicker && (
                     <DateTimePicker
                         value={selectedDate}
@@ -185,14 +171,14 @@ export default function InputForm() {
                 onChangeText={(text) => setDescription(text)}
             />
             <View style={styles.checkboxContainer}>
-                <Text style={styles.label}>Parking Available:</Text>
+                <Text style={styles.label}>Parking Available</Text>
                 <CheckBox value={isChecked} onValueChange={handleCheckBoxChange} />
             </View>
             <View style={styles.buttonsContainer}>
-                <Button title={hikeData != undefined ? "UPDATE" : "SUBMIT"} onPress={toggleModal} color="#007BFF" />
+                <Button title={hikeData != undefined ? 'UPDATE' : 'SUBMIT'} onPress={toggleModal} style={styles.button} />
                 <Modal isVisible={isModalVisible}>
                     <View style={styles.modalContainer}>
-                        <Text style={styles.modalHeader}>Review Your Input:</Text>
+                        <Text style={styles.modalHeader}>Hike Details</Text>
                         <Text>Hike Name: {name}</Text>
                         <Text>Location: {location}</Text>
                         <Text>Hike Length: {length}</Text>
@@ -201,7 +187,6 @@ export default function InputForm() {
                         <Text>Equipments: {equipment}</Text>
                         <Text>Description: {description}</Text>
                         <Text>Parking Availability: {isChecked ? 'Yes' : 'No'}</Text>
-
                         <View style={styles.modalButtonsContainer}>
                             <Button title="Cancel" onPress={toggleModal} color="red" />
                             <Button title="Confirm" onPress={handleConfirmation} color="#007BFF" />
@@ -217,8 +202,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
+        backgroundColor: "white"
     },
     container2: {
+        padding: 16,
 
     },
     input: {
@@ -230,19 +217,21 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         marginBottom: 5,
+        marginRight: 5,
     },
     datePicker: {
         padding: 16,
+
     },
     list: {
         width: '100%',
         color: '#000000',
         fontSize: 22,
-        margin: 20,
+        margin: 2,
     },
     header: {
         fontSize: 20,
-        marginBottom: 10,
+        marginBottom: 3,
     },
     checkboxContainer: {
         flexDirection: 'row',
@@ -265,5 +254,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginTop: 20,
+    },
+    button: {
+        color: "#588157",
+        padding: 120,
+        borderRadius: 6,
+
     },
 });

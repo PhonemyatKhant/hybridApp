@@ -11,9 +11,9 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="InputForm" component={InputForm} />
-        <Stack.Screen name="HikeDetails" component={HikeDetails} />
+        <Stack.Screen name="M-Hike" component={Home} />
+        <Stack.Screen name="Input Hike Details" component={InputForm} />
+        <Stack.Screen name="Hike Details" component={HikeDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );

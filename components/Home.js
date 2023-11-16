@@ -4,8 +4,8 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
 import * as SQLite from 'expo-sqlite';
 import { LogBox } from 'react-native';
-LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
-LogBox.ignoreAllLogs(); //Ignore all log notifications
+LogBox.ignoreLogs(['new NativeEventEmitter']);
+LogBox.ignoreAllLogs();
 
 export default function Home() {
     const db = SQLite.openDatabase('mhikeRn.db');
@@ -14,7 +14,6 @@ export default function Home() {
 
 
     const [hikeData, setHikeData] = useState([]);
-    //const [deleteHike, setDeleteHike] = useState(null);
 
     useEffect(() => {
         db.transaction((tx) => {
@@ -95,7 +94,7 @@ export default function Home() {
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                     <TouchableOpacity
-                        onPress={() => navigation.navigate('HikeDetails', { hike: item })}
+                        onPress={() => navigation.navigate('Hike Details', { hike: item })}
                     >
                         <View style={styles.hikeItem}>
                             <Text style={styles.hikeName}>{item.name}</Text>
@@ -103,9 +102,9 @@ export default function Home() {
                             <View style={styles.iconContainer}>
                                 <TouchableOpacity
                                     style={styles.iconButton}
-                                    onPress={() => navigation.navigate('InputForm', { item: item })}
+                                    onPress={() => navigation.navigate('Input Hike Details', { item: item })}
                                 >
-                                    <AntDesign name="edit" size={24} color="green" />
+                                    <AntDesign name="edit" size={24} color="white" />
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={styles.iconButton}
@@ -115,7 +114,7 @@ export default function Home() {
                                         deleteConfirm(item.id);
                                     }}
                                 >
-                                    <AntDesign name="delete" size={24} color="red" />
+                                    <AntDesign name="delete" size={24} color="white" />
                                 </TouchableOpacity>
                             </View>
                         </View></TouchableOpacity>
@@ -135,9 +134,9 @@ export default function Home() {
 
             <TouchableOpacity
                 style={styles.addButton}
-                onPress={() => navigation.navigate('InputForm')}
+                onPress={() => navigation.navigate('Input Hike Details')}
             >
-                <AntDesign name="pluscircle" size={40} color="blue" />
+                <AntDesign name="pluscircle" size={40} color="#588157" />
             </TouchableOpacity>
         </View>
     );
@@ -147,24 +146,28 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
+        backgroundColor: '#DAD7CD'
     },
     hikeItem: {
-        backgroundColor: 'white',
+        backgroundColor: '#588157',
         borderRadius: 8,
         padding: 16,
         marginBottom: 16,
     },
     hikeName: {
-        fontSize: 18,
+        fontSize: 25,
         fontWeight: 'bold',
+        color: "white"
     },
     hikeLocation: {
         fontSize: 16,
+        color: "white"
     },
     addButton: {
         position: 'absolute',
         bottom: 16,
         right: 16,
+
     },
     iconContainer: {
         flexDirection: 'row',
@@ -179,5 +182,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 16,
         left: 15,
+
     },
 });

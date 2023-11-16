@@ -39,16 +39,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-        backgroundColor: '#f0f0f0',
+        backgroundColor: '#DAD7CD',
     },
     headerContainer: {
-        backgroundColor: 'black',
+        backgroundColor: '#588157',
         padding: 16,
         borderRadius: 8,
-        marginBottom: 16,
+        marginBottom: 8,
     },
     title: {
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: 'bold',
         color: 'white',
     },
@@ -61,6 +61,8 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginTop: 16,
+        marginBottom: 8,
+        color: "#344E41"
     },
     detailsContainer: {
         backgroundColor: 'white',
@@ -71,14 +73,16 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
-        elevation: 5,
+        elevation: 2,
     },
     detailText: {
         fontSize: 16,
         marginBottom: 8,
+        fontWeight: 'bold',
     },
     description: {
         fontSize: 16,
+        fontWeight: 'bold',
         backgroundColor: 'white',
         padding: 16,
         borderRadius: 8,

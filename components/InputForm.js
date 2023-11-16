@@ -6,6 +6,7 @@ import { SelectList } from 'react-native-dropdown-select-list';
 import Modal from 'react-native-modal';
 import * as SQLite from 'expo-sqlite';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const db = SQLite.openDatabase('mhikeRn.db');
 
@@ -256,9 +257,15 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     button: {
-        color: "#588157",
-        padding: 120,
-        borderRadius: 6,
+        backgroundColor: "#588157",
+
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 32,
+        borderRadius: 4,
+        elevation: 3,
+
 
     },
 });
